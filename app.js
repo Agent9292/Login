@@ -31,17 +31,17 @@ tabs.forEach(tab => {
 
 
 // =======================================
-// 🧾 REGISTER USER
+// 🧾 REGISTER USER (CREATE ACCOUNT)
 // =======================================
 document.getElementById("registerForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+  e.preventDefault(); // IMPORTANT!
 
   const name = e.target.name.value.trim();
   const email = e.target.email.value.trim();
   const password = e.target.password.value.trim();
 
   if (!name || !email || !password) {
-    alert("Please fill all fields.");
+    showAlert("❌ Please fill all fields!");
     return;
   }
 
@@ -51,17 +51,15 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
     user.email = email;
     user.password = password;
 
-    const createdUser = await Backendless.UserService.register(user);
+    const created = await Backendless.UserService.register(user);
 
-    alert("Account created successfully!");
-
-    console.log("REGISTER →", createdUser);
+    showAlert("✅ Account created successfully!");
+    console.log("REGISTER:", created);
 
     e.target.reset();
 
   } catch (err) {
-    console.error(err);
-    alert("Error: " + err.message);
+    showAlert("❌ Error: " + err.message);
   }
 });
 
@@ -71,29 +69,59 @@ document.getElementById("registerForm").addEventListener("submit", async (e) => 
 // 🔐 LOGIN USER
 // =======================================
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
+  e.preventDefault(); // IMPORTANT!
 
   const email = e.target.email.value.trim();
   const password = e.target.password.value.trim();
 
   if (!email || !password) {
-    alert("Please enter your email and password.");
+    showAlert("❌ Enter email and password.");
     return;
   }
 
   try {
-    const loggedUser = await Backendless.UserService.login(email, password, true);
+    const logged = await Backendless.UserService.login(email, password, true);
 
-    alert("Logged in successfully!");
+    showAlert("✅ Login successful!");
+    console.log("LOGIN:", logged);
 
-    console.log("LOGIN →", loggedUser);
-
-    // Yahan tum apna redirect daal sakte ho
-    // window.location.href = "dashboard.html";
+    // SUCCESS → Redirect to Google
+    window.location.href = "https://www.google.com";
 
   } catch (err) {
-    console.error(err);
-    alert("Login failed: " + err.message);
+    showAlert("❌ Login failed: " + err.message);
   }
 });
 
+
+
+// =======================================
+// 🔔 SIMPLE ALERT (Top Message)
+// =======================================
+function showAlert(msg) {
+  let box = document.getElementById("msgBox");
+
+  if (!box) {
+    box = document.createElement("div");
+    box.id = "msgBox";
+    box.style.position = "fixed";
+    box.style.top = "20px";
+    box.style.left = "50%";
+    box.style.transform = "translateX(-50%)";
+    box.style.padding = "12px 25px";
+    box.style.background = "#ff0044";
+    box.style.color = "#fff";
+    box.style.borderRadius = "8px";
+    box.style.fontSize = "15px";
+    box.style.zIndex = "9999";
+    box.style.boxShadow = "0 0 10px rgba(0,0,0,0.4)";
+    document.body.appendChild(box);
+  }
+
+  box.innerHTML = msg;
+  box.style.display = "block";
+
+  setTimeout(() => {
+    box.style.display = "none";
+  }, 3000);
+}
