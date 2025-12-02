@@ -1,75 +1,81 @@
 <!-- File: index.html -->
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Signup / Login — Simple</title>
+<title>Auth — Dark Minimal</title>
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<main class="auth-page">
+<main class="auth-wrap">
+<div class="left-visual"></div>
+
+
 <div class="card">
-<h1 class="brand">MyApp</h1>
+<header class="card-head">
+<h1 class="logo">Nebula</h1>
+<p class="subtitle">Secure access — simple and fast</p>
+</header>
 
 
-<div class="tabs">
-<button class="tab-btn active" data-target="login">Login</button>
-<button class="tab-btn" data-target="register">Register</button>
+<nav class="toggle">
+<button class="tab active" data-target="login">Sign in</button>
+<button class="tab" data-target="register">Create account</button>
+</nav>
+
+
+<section id="login" class="panel active">
+<form id="loginForm" class="form" novalidate>
+<div class="field">
+<label>Email</label>
+<input type="email" name="email" placeholder="you@domain.com" required>
 </div>
 
 
-<section id="login" class="form-panel active">
-<form class="form" id="loginForm" novalidate>
-<label class="field">
-<span>Email</span>
-<input type="email" name="email" placeholder="you@example.com" required />
-</label>
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" placeholder="••••••••" required>
+</div>
 
 
-<label class="field">
-<span>Password</span>
-<input type="password" name="password" placeholder="Your password" required />
-</label>
+<div class="row-between">
+<label class="small"><input type="checkbox"> Remember me</label>
+<a class="link">Forgot?</a>
+</div>
 
 
-<button type="submit" class="btn">Login</button>
+<button class="btn primary" type="submit">Sign in</button>
 </form>
 </section>
 
 
-<section id="register" class="form-panel">
-<form class="form" id="registerForm" novalidate>
-<label class="field">
-<span>Full name</span>
-<input type="text" name="name" placeholder="Your name" required />
-</label>
+<section id="register" class="panel">
+<form id="registerForm" class="form" novalidate>
+<div class="field">
+<label>Full name</label>
+<input type="text" name="name" placeholder="Your name" required>
+</div>
 
 
-<label class="field">
-<span>Email</span>
-<input type="email" name="email" placeholder="you@example.com" required />
-</label>
+<div class="field">
+<label>Email</label>
+<input type="email" name="email" placeholder="you@domain.com" required>
+</div>
 
 
-<label class="field">
-<span>Password</span>
-<input type="password" name="password" placeholder="Create a password" required />
-</label>
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" placeholder="Create a strong password" required>
+</div>
 
 
-<label class="field small">
-<input type="checkbox" name="terms" /> <span>I agree to the terms</span>
-</label>
-
-
-<button type="submit" class="btn">Register</button>
+<button class="btn accent" type="submit">Create account</button>
 </form>
 </section>
 
 
-<p class="note">Note: This is static HTML/CSS. I'll add JavaScript for handling register/login when you tell me to.</p>
+<footer class="card-foot">By continuing you agree to our <a class="link">Terms</a> and <a class="link">Privacy</a>.</footer>
 </div>
 </main>
+
+
+<!-- Scripts will be added later as you requested -->
 </body>
 </html>
