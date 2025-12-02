@@ -1,1 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<style>
+  body {
+    font-family: Arial;
+    background: #0f1724;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .login-box {
+    background: #0b1220;
+    padding: 30px;
+    border-radius: 12px;
+    width: 320px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  }
+
+  .login-box h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #7c3aed;
+  }
+
+  .login-box input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 8px;
+    background: #1a2332;
+    color: #fff;
+  }
+
+  .login-box button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    background: #7c3aed;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+
+  .login-box button:hover {
+    opacity: 0.9;
+  }
+
+  #msg {
+    margin-top: 15px;
+    text-align: center;
+    color: #ff4d4d;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-box">
+  <h2>User Login</h2>
+
+  <form id="loginForm">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button type="submit">Login</button>
+  </form>
+
+  <p id="msg"></p>
+</div>
+
+<script src="https://api.backendless.com/sdk/js/latest/backendless.min.js"></script>
+
+<script>
+  const APP_ID = "312D4559-96D4-4627-9AAE-88BFDC7ED1CC";
+  const API_KEY = "CDF8B2F0-2693-428B-A125-50CA7F5B7662";
+
+  Backendless.initApp(APP_ID, API_KEY);
+
+  const form = document.getElementById("loginForm");
+  const msg = document.getElementById("msg");
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    let email = document.getElementById("email").value;
+    let pass  = document.getElementById("password").value;
+
+    try {
+      const user = await Backendless.UserService.login(email, pass, true);
+      msg.style.color = "#4eff7b";
+      msg.innerText = "Login Successful ✔";
+
+      // Redirect
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 1000);
+
+    } catch (err) {
+      msg.style.color = "#ff4d4d";
+      msg.innerText = "Login Failed: " + err.message;
+    }
+  });
+</script>
+
+</body>
+</html>
 
