@@ -16,6 +16,7 @@ tabs.forEach(tab => {
   tab.addEventListener("click", () => {
     tabs.forEach(t => t.classList.remove("active"));
     panels.forEach(p => p.classList.remove("active"));
+
     tab.classList.add("active");
     document.getElementById(tab.dataset.target).classList.add("active");
   });
@@ -25,6 +26,7 @@ tabs.forEach(tab => {
 // REGISTER FORM
 // ------------------------------------------
 const registerForm = document.getElementById("registerForm");
+const registerMsg = document.getElementById("registerMessage");
 
 registerForm.addEventListener("submit", async (e) => {
   e.preventDefault();
@@ -34,7 +36,7 @@ registerForm.addEventListener("submit", async (e) => {
   const password = registerForm.password.value.trim();
 
   if (!username || !email || !password) {
-    alert("Please fill all fields!");
+    registerMsg.innerHTML = "<span style='color:red'>❌ Please fill all fields!</span>";
     return;
   }
 
@@ -42,36 +44,47 @@ registerForm.addEventListener("submit", async (e) => {
 
   try {
     await Backendless.UserService.register(newUser);
-    alert("Account created successfully!");
-    document.querySelector('.tab[data-target="login"]').click();
+
+    registerMsg.innerHTML = "<span style='color:green'>✔ Account created successfully!</span>";
+
+    setTimeout(() => {
+      document.querySelector('.tab[data-target="login"]').click();
+    }, 800);
+
   } catch (err) {
-    alert("Registration Error: " + err.message);
+    registerMsg.innerHTML = "<span style='color:red'>❌ " + err.message + "</span>";
   }
 });
 
 // ------------------------------------------
-// LOGIN FORM (simplified)
+// LOGIN FORM (fixed + success message)
 // ------------------------------------------
 const loginForm = document.getElementById("loginForm");
+const loginMsg = document.getElementById("loginMessage");
 
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const identifier = loginForm.identifier.value.trim(); // username OR email
+  const identifier = loginForm.identifier.value.trim(); // email or username
   const password = loginForm.password.value.trim();
 
   if (!identifier || !password) {
-    alert("Please enter your login details!");
+    loginMsg.innerHTML = "<span style='color:red'>❌ Please fill all fields!</span>";
     return;
   }
 
   try {
-    // Direct login (Backendless accepts either email or username)
-    await Backendless.UserService.login(identifier, password, true);
+    // Backendless expects email by default
+    // username login automatically works if username field exists in DB
+    const user = await Backendless.UserService.login(identifier, password, true);
 
-    alert("Login successful!");
-    window.location.href = "https://www.google.com"; // redirect
+    loginMsg.innerHTML = "<span style='color:green'>✔ Login successful! Redirecting...</span>";
+
+    setTimeout(() => {
+      window.location.href = "https://www.google.com";
+    }, 1200);
+
   } catch (err) {
-    alert("Login failed: " + err.message);
+    loginMsg.innerHTML = "<span style='color:red'>❌ Login failed: " + err.message + "</span>";
   }
 });
