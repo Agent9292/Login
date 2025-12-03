@@ -14,11 +14,8 @@ const panels = document.querySelectorAll(".panel");
 
 tabs.forEach(tab => {
   tab.addEventListener("click", () => {
-    // remove active from all
     tabs.forEach(t => t.classList.remove("active"));
     panels.forEach(p => p.classList.remove("active"));
-
-    // add active to current
     tab.classList.add("active");
     document.getElementById(tab.dataset.target).classList.add("active");
   });
@@ -42,16 +39,16 @@ registerForm.addEventListener("submit", async (e) => {
   }
 
   const newUser = {
-    username,
-    email,
-    password
+    username: username,
+    email: email,
+    password: password
   };
 
   try {
     await Backendless.UserService.register(newUser);
     alert("Account created successfully!");
 
-    // Switch to login tab automatically
+    // Switch to login tab
     document.querySelector('.tab[data-target="login"]').click();
 
   } catch (err) {
@@ -60,8 +57,7 @@ registerForm.addEventListener("submit", async (e) => {
 });
 
 // ------------------------------------------
-// LOGIN FORM
-// Username OR Email + Password
+// LOGIN FORM (username OR email)
 // ------------------------------------------
 const loginForm = document.getElementById("loginForm");
 
@@ -72,29 +68,41 @@ loginForm.addEventListener("submit", async (e) => {
   const password = loginForm.password.value.trim();
 
   if (!identifier || !password) {
-    alert("Please enter your login details!");
+    alert("Please enter login details!");
     return;
   }
 
   try {
-    // If input contains "@" treat as email, else username
-    let loginField;
+    let query;
 
+    // identifier is email
     if (identifier.includes("@")) {
-      loginField = { email: identifier };
-    } else {
-      loginField = { username: identifier };
+      query = `email = '${identifier}'`;
+    }
+    // identifier is username
+    else {
+      query = `username = '${identifier}'`;
     }
 
-    // search DB for user
-    const foundUser = await Backendless.Data.of("Users").findFirst(loginField);
+    // Find user
+    const foundUsers = await Backendless.Data.of("Users").find({
+      whereClause: query,
+      pageSize: 1
+    });
 
-    // then login using email + password (Backendless requires email for login)
-    const loggedIn = await Backendless.UserService.login(foundUser.email, password, true);
+    if (foundUsers.length === 0) {
+      alert("User not found!");
+      return;
+    }
+
+    const foundUser = foundUsers[0];
+
+    // Login using user email (Backendless requires email)
+    await Backendless.UserService.login(foundUser.email, password, true);
 
     alert("Login successful!");
 
-    // redirect to Google (you can change the link)
+    // Redirect to Google
     window.location.href = "https://www.google.com";
 
   } catch (err) {
