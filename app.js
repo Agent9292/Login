@@ -38,17 +38,13 @@ registerForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  const newUser = {
-    username: username,
-    email: email,
-    password: password
-  };
+  const newUser = { username, email, password };
 
   try {
     await Backendless.UserService.register(newUser);
     alert("Account created successfully!");
 
-    // Switch to login tab
+    // Switch to login tab automatically
     document.querySelector('.tab[data-target="login"]').click();
 
   } catch (err) {
@@ -68,23 +64,16 @@ loginForm.addEventListener("submit", async (e) => {
   const password = loginForm.password.value.trim();
 
   if (!identifier || !password) {
-    alert("Please enter login details!");
+    alert("Please enter your login details!");
     return;
   }
 
   try {
-    let query;
+    let query = identifier.includes("@") 
+      ? `email = '${identifier}'` 
+      : `username = '${identifier}'`;
 
-    // identifier is email
-    if (identifier.includes("@")) {
-      query = `email = '${identifier}'`;
-    }
-    // identifier is username
-    else {
-      query = `username = '${identifier}'`;
-    }
-
-    // Find user
+    // search user
     const foundUsers = await Backendless.Data.of("Users").find({
       whereClause: query,
       pageSize: 1
@@ -97,12 +86,10 @@ loginForm.addEventListener("submit", async (e) => {
 
     const foundUser = foundUsers[0];
 
-    // Login using user email (Backendless requires email)
+    // login using email (Backendless requires email)
     await Backendless.UserService.login(foundUser.email, password, true);
 
-    alert("Login successful!");
-
-    // Redirect to Google
+    // SUCCESS → open Google
     window.location.href = "https://www.google.com";
 
   } catch (err) {
