@@ -36,19 +36,23 @@ registerForm.addEventListener("submit", async (e) => {
   const password = registerForm.password.value.trim();
 
   if (!username || !email || !password) {
-    registerMsg.innerHTML = "<span style='color:red'>❌ Please fill all fields!</span>";
+    registerMsg.innerHTML = "<span style='color:red'>❌ Fill all fields!</span>";
     return;
   }
 
-  const newUser = { username, email, password };
-
   try {
+    const newUser = { username, email, password };
     await Backendless.UserService.register(newUser);
 
-    registerMsg.innerHTML = "<span style='color:green'>✔ Account created successfully!</span>";
+    // UI message
+    registerMsg.innerHTML = "<span style='color:green'>🎉 Account created successfully!</span>";
 
+    // Console log
+    console.log("🎉 Your account was successfully created!");
+
+    // Auto switch to login
     setTimeout(() => {
-      document.querySelector('.tab[data-target="login"]').click();
+      document.querySelector('.tab[data-target=\"login\"]').click();
     }, 800);
 
   } catch (err) {
@@ -57,7 +61,7 @@ registerForm.addEventListener("submit", async (e) => {
 });
 
 // ------------------------------------------
-// LOGIN FORM (fixed + success message)
+// LOGIN FORM
 // ------------------------------------------
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMessage");
@@ -65,24 +69,22 @@ const loginMsg = document.getElementById("loginMessage");
 loginForm.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const identifier = loginForm.identifier.value.trim(); // email or username
+  const identifier = loginForm.identifier.value.trim(); // username or email
   const password = loginForm.password.value.trim();
 
   if (!identifier || !password) {
-    loginMsg.innerHTML = "<span style='color:red'>❌ Please fill all fields!</span>";
+    loginMsg.innerHTML = "<span style='color:red'>❌ Fill all fields!</span>";
     return;
   }
 
   try {
-    // Backendless expects email by default
-    // username login automatically works if username field exists in DB
     const user = await Backendless.UserService.login(identifier, password, true);
 
-    loginMsg.innerHTML = "<span style='color:green'>✔ Login successful! Redirecting...</span>";
+    // UI success message
+    loginMsg.innerHTML = "<span style='color:green'>✅ Login successful!</span>";
 
-    setTimeout(() => {
-      window.location.href = "https://www.google.com";
-    }, 1200);
+    // Console success message
+    console.log(`🎉 User logged in successfully: ${identifier}`);
 
   } catch (err) {
     loginMsg.innerHTML = "<span style='color:red'>❌ Login failed: " + err.message + "</span>";
