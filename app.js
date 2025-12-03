@@ -1,67 +1,103 @@
-// app.js - FIXED VERSION - Sab Kaam Karega!
-Backendless.initApp("312D4559-96D4-4627-9AAE-88BFDC7ED1CC", "CDF8B2F0-2693-428B-A125-50CA7F5B7662");
+// ------------------------------------------
+// Backendless Init
+// ------------------------------------------
+Backendless.initApp(
+  "BE4587A1-939B-4462-8DB1-0D3DF406DA08",
+  "2224DCAC-4651-478B-A669-1C3C8F8B13DC"
+);
 
-// 🚀 TAB SWITCHING - YE SABSE PEHLE FIX KIA
-document.querySelectorAll('.tab').forEach(function(tab) {
-    tab.addEventListener('click', function() {
-        // Sabko active remove karo
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        
-        // Jo click hua usko active banao
-        this.classList.add('active');
-        document.getElementById(this.dataset.target).classList.add('active');
-    });
+// ------------------------------------------
+// TAB SWITCHING (login <-> register)
+// ------------------------------------------
+const tabs = document.querySelectorAll(".tab");
+const panels = document.querySelectorAll(".panel");
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    // remove active from all
+    tabs.forEach(t => t.classList.remove("active"));
+    panels.forEach(p => p.classList.remove("active"));
+
+    // add active to current
+    tab.classList.add("active");
+    document.getElementById(tab.dataset.target).classList.add("active");
+  });
 });
 
-// 🔐 LOGIN FORM - NO AUTO CLEAR
-document.getElementById('loginForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Page reload band
-    
-    const email = this.querySelector('input[name="email"]').value;
-    const password = this.querySelector('input[name="password"]').value;
-    
-    Backendless.UserService.login(email, password, true)
-        .then(function() {
-            window.location.href = 'https://google.com'; // Success = Google
-        })
-        .catch(function(error) {
-            alert('Login nahi hua! Email/password check karo');
-            console.log('Error:', error);
-        });
+// ------------------------------------------
+// REGISTER FORM
+// ------------------------------------------
+const registerForm = document.getElementById("registerForm");
+
+registerForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const username = registerForm.username.value.trim();
+  const email = registerForm.email.value.trim();
+  const password = registerForm.password.value.trim();
+
+  if (!username || !email || !password) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  const newUser = {
+    username,
+    email,
+    password
+  };
+
+  try {
+    await Backendless.UserService.register(newUser);
+    alert("Account created successfully!");
+
+    // Switch to login tab automatically
+    document.querySelector('.tab[data-target="login"]').click();
+
+  } catch (err) {
+    alert("Error: " + err.message);
+  }
 });
 
-// 📝 REGISTER FORM - NO AUTO CLEAR + NO SWITCH
-document.getElementById('registerForm').addEventListener('submit', function(e) {
-    e.preventDefault(); // Page reload band
-    
-    const name = this.querySelector('input[name="name"]').value;
-    const email = this.querySelector('input[name="email"]').value;
-    const password = this.querySelector('input[name="password"]').value;
-    
-    // Simple check
-    if (!name || !email || !password || password.length < 6) {
-        alert('Name, email bharo aur password 6+ characters ka karo!');
-        return;
+// ------------------------------------------
+// LOGIN FORM
+// Username OR Email + Password
+// ------------------------------------------
+const loginForm = document.getElementById("loginForm");
+
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const identifier = loginForm.identifier.value.trim(); // username OR email
+  const password = loginForm.password.value.trim();
+
+  if (!identifier || !password) {
+    alert("Please enter your login details!");
+    return;
+  }
+
+  try {
+    // If input contains "@" treat as email, else username
+    let loginField;
+
+    if (identifier.includes("@")) {
+      loginField = { email: identifier };
+    } else {
+      loginField = { username: identifier };
     }
-    
-    const user = new Backendless.User();
-    user.name = name;
-    user.email = email;
-    user.password = password;
-    
-    Backendless.UserService.register(user)
-        .then(function() {
-            alert('Account ban gaya! Ab login karo.');
-            // FORM CLEAR NHI KAR RAHE - Jaise mangwaya!
-        })
-        .catch(function(error) {
-            alert('Account nahi bana! Email pehle se hai ya password weak hai.');
-            console.log('Error:', error);
-        });
-});
 
-// Page load hone ka wait
-window.addEventListener('load', function() {
-    console.log('✅ App loaded - Tabs ready!');
+    // search DB for user
+    const foundUser = await Backendless.Data.of("Users").findFirst(loginField);
+
+    // then login using email + password (Backendless requires email for login)
+    const loggedIn = await Backendless.UserService.login(foundUser.email, password, true);
+
+    alert("Login successful!");
+
+    // redirect to Google (you can change the link)
+    window.location.href = "https://www.google.com";
+
+  } catch (err) {
+    alert("Login failed: " + err.message);
+  }
 });
