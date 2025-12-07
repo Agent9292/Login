@@ -22,7 +22,7 @@ const APP_ID = "BE4587A1-939B-4462-8DB1-0D3DF406DA08";
 const API_KEY = "2224DCAC-4651-478B-A669-1C3C8F8B13DC"; // JS KEY
 
 // your cloud code service "AuthService"
-const BASE_URL = `https://api.backendless.com/${APP_ID}/${API_KEY}/services/AuthService`;
+const BASE_URL = `https://api.backendless.com/${APP_ID}/${API_KEY}/services/Login`;
 
 
 // ------------------------------------------
