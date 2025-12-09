@@ -2,16 +2,14 @@
 // BACKENDLESS API CONFIG
 // ------------------------------------------
 const APP_ID = "01934801-7990-4C01-B583-16A556577788";
-const API_KEY = "FFF3E121-DFAC-4477-9BAE-8127B787E51B"; // JS KEY
+const API_KEY = "FFF3E121-DFAC-4477-9BAE-8127B787E51B";
 
-// Your Cloud Code Service: CLASS NAME = Login
 const SERVICE_NAME = "Login";
-
 const BASE_URL = `https://api.backendless.com/${APP_ID}/${API_KEY}/services/${SERVICE_NAME}`;
 
 
 // ------------------------------------------
-// TAB SWITCHING (login <-> register)
+// TAB SWITCHING UI
 // ------------------------------------------
 const tabs = document.querySelectorAll(".tab");
 const panels = document.querySelectorAll(".panel");
@@ -20,11 +18,67 @@ tabs.forEach(tab => {
   tab.addEventListener("click", () => {
     tabs.forEach(t => t.classList.remove("active"));
     panels.forEach(p => p.classList.remove("active"));
-
     tab.classList.add("active");
     document.getElementById(tab.dataset.target).classList.add("active");
   });
 });
+
+
+// ----------------------------------------------------
+// UNIVERSAL FETCH WRAPPER (with full debugging)
+// ----------------------------------------------------
+async function apiRequest(url, body) {
+  console.log("📡 Sending Request:", url);
+  console.log("📨 Payload:", body);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    console.log("📥 Raw Response:", response);
+
+    const text = await response.text();
+    console.log("📥 Raw Body Text:", text);
+
+    let json;
+
+    try {
+      json = JSON.parse(text);
+    } catch (parseErr) {
+      console.error("❌ JSON Parse Error:", parseErr);
+      return {
+        success: false,
+        message: "Server returned invalid JSON format!",
+        raw: text
+      };
+    }
+
+    // If backend gives an error
+    if (!response.ok) {
+      console.error("❌ HTTP ERROR:", response.status, response.statusText);
+      return {
+        success: false,
+        message: json.message || "Unknown server error",
+        httpStatus: response.status,
+        raw: json
+      };
+    }
+
+    console.log("✅ Parsed JSON:", json);
+    return json;
+
+  } catch (networkErr) {
+    console.error("🌐 Network Error:", networkErr);
+    return {
+      success: false,
+      message: "Network error occurred!",
+      raw: networkErr
+    };
+  }
+}
 
 
 // ------------------------------------------
@@ -33,7 +87,7 @@ tabs.forEach(tab => {
 const registerForm = document.getElementById("registerForm");
 const registerMsg = document.getElementById("registerMessage");
 
-registerForm.addEventListener("submit", async (e) => {
+registerForm.addEventListener("submit", async e => {
   e.preventDefault();
 
   const username = registerForm.username.value.trim();
@@ -45,33 +99,21 @@ registerForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  try {
-    const res = await fetch(`${BASE_URL}/signup`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        email,
-        password
-      })
-    });
+  const result = await apiRequest(`${BASE_URL}/signup`, {
+    username, email, password
+  });
 
-    const result = await res.json();
-    console.log("Signup Response:", result);
+  if (result.success) {
+    registerMsg.innerHTML = "<span style='color:green'>🎉 Account created!</span>";
+    console.log("🟢 Signup Success:", result);
 
-    if (result.success) {
-      registerMsg.innerHTML = "<span style='color:green'>🎉 Account created successfully!</span>";
+    setTimeout(() => {
+      document.querySelector('.tab[data-target="login"]').click();
+    }, 800);
 
-      setTimeout(() => {
-        document.querySelector('.tab[data-target="login"]').click();
-      }, 800);
-
-    } else {
-      registerMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
-    }
-
-  } catch (err) {
-    registerMsg.innerHTML = `<span style='color:red'>❌ ${err.message}</span>`;
+  } else {
+    registerMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
+    console.error("🔴 Signup Error:", result);
   }
 });
 
@@ -82,7 +124,7 @@ registerForm.addEventListener("submit", async (e) => {
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMessage");
 
-loginForm.addEventListener("submit", async (e) => {
+loginForm.addEventListener("submit", async e => {
   e.preventDefault();
 
   const identifier = loginForm.identifier.value.trim();
@@ -93,31 +135,20 @@ loginForm.addEventListener("submit", async (e) => {
     return;
   }
 
-  try {
-    const res = await fetch(`${BASE_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        identifier,
-        password
-      })
-    });
+  const result = await apiRequest(`${BASE_URL}/login`, {
+    identifier, password
+  });
 
-    const result = await res.json();
-    console.log("Login Response:", result);
+  if (result.success) {
+    loginMsg.innerHTML = "<span style='color:green'>✅ Login successful!</span>";
+    console.log("🟢 Login Success:", result);
 
-    if (result.success) {
-      loginMsg.innerHTML = "<span style='color:green'>✅ Login successful!</span>";
+    setTimeout(() => {
+      window.location.href = "https://www.google.com/";
+    }, 600);
 
-      setTimeout(() => {
-        window.location.href = "https://www.google.com/";
-      }, 600);
-
-    } else {
-      loginMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
-    }
-
-  } catch (err) {
-    loginMsg.innerHTML = `<span style='color:red'>❌ ${err.message}</span>`;
+  } else {
+    loginMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
+    console.error("🔴 Login Error:", result);
   }
 });
