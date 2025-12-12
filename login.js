@@ -1,16 +1,13 @@
-// ------------------------------------------
-// SUPABASE EDGE FUNCTION CONFIG
-// ------------------------------------------
+/* ============================================================
+   PUBLIC EDGE FUNCTION URL (NO ANON KEY REQUIRED)
+============================================================ */
 const EDGE_URL =
   "https://vbcwluybotksaimqfodf.supabase.co/functions/v1/Logics-Logins";
 
-const SUPABASE_ANON_KEY =
-  "eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3M101JzdXBhYmFzZSIsInJlZiI6InZiY3dsdXlib3Rrc2FpbXFmb2RmIiwicm9sZSI6ImFub241LCJpYXQiOjE3NjUwMzA4NDcsImV4cCI6MjA4MDYwNjg3MH0.Ihjp_kpy8W2dcJGSKHOcb4rqMMnbYcegWiST3tEh-KO";
 
-
-// ------------------------------------------
-// TAB SWITCHING UI
-// ------------------------------------------
+/* ============================================================
+   TAB SWITCHING
+============================================================ */
 const tabs = document.querySelectorAll(".tab");
 const panels = document.querySelectorAll(".panel");
 
@@ -18,40 +15,38 @@ tabs.forEach(tab => {
   tab.addEventListener("click", () => {
     tabs.forEach(t => t.classList.remove("active"));
     panels.forEach(p => p.classList.remove("active"));
+
     tab.classList.add("active");
     document.getElementById(tab.dataset.target).classList.add("active");
   });
 });
 
 
-// ----------------------------------------------------
-// UNIVERSAL REQUEST WRAPPER
-// ----------------------------------------------------
+/* ============================================================
+   UNIVERSAL EDGE FUNCTION CALLER (No anon key)
+============================================================ */
 async function callEdgeFunction(payload) {
-
   try {
     const res = await fetch(EDGE_URL, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
-        "apikey": SUPABASE_ANON_KEY
+        "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
     });
 
     const text = await res.text();
-    console.log("📥 RAW:", text);
+    console.log("🔵 RAW:", text);
 
     let json;
     try {
       json = JSON.parse(text);
     } catch {
-      return { success: false, message: "Server returned invalid JSON" };
+      return { success: false, message: "Invalid JSON returned from server" };
     }
 
     if (!res.ok) {
-      return { success: false, message: json.message || "Unknown error", raw: json };
+      return { success: false, message: json.message || "Unknown error" };
     }
 
     return json;
@@ -62,9 +57,10 @@ async function callEdgeFunction(payload) {
 }
 
 
-// ------------------------------------------
-// REGISTER FORM
-// ------------------------------------------
+
+/* ============================================================
+   REGISTER FORM HANDLER
+============================================================ */
 const registerForm = document.getElementById("registerForm");
 const registerMsg = document.getElementById("registerMessage");
 
@@ -76,7 +72,7 @@ registerForm.addEventListener("submit", async e => {
   const password = registerForm.password.value.trim();
 
   if (!username || !email || !password) {
-    registerMsg.innerHTML = "<span style='color:red'>❌ Fill all fields!</span>";
+    registerMsg.innerHTML = `<span style="color:#ff4d4d">❌ Fill all fields!</span>`;
     return;
   }
 
@@ -88,21 +84,23 @@ registerForm.addEventListener("submit", async e => {
   });
 
   if (result.success) {
-    registerMsg.innerHTML = "<span style='color:green'>🎉 Account created!</span>";
+    registerMsg.innerHTML = `<span style="color:#00c853">🎉 Account created!</span>`;
+    registerForm.reset();
 
     setTimeout(() => {
       document.querySelector('.tab[data-target="login"]').click();
     }, 800);
 
   } else {
-    registerMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
+    registerMsg.innerHTML = `<span style="color:#ff4d4d">❌ ${result.message}</span>`;
   }
 });
 
 
-// ------------------------------------------
-// LOGIN FORM
-// ------------------------------------------
+
+/* ============================================================
+   LOGIN FORM HANDLER
+============================================================ */
 const loginForm = document.getElementById("loginForm");
 const loginMsg = document.getElementById("loginMessage");
 
@@ -113,7 +111,7 @@ loginForm.addEventListener("submit", async e => {
   const password = loginForm.password.value.trim();
 
   if (!identifier || !password) {
-    loginMsg.innerHTML = "<span style='color:red'>❌ Fill all fields!</span>";
+    loginMsg.innerHTML = `<span style="color:#ff4d4d">❌ Fill all fields!</span>`;
     return;
   }
 
@@ -124,13 +122,13 @@ loginForm.addEventListener("submit", async e => {
   });
 
   if (result.success) {
-    loginMsg.innerHTML = "<span style='color:green'>✅ Login successful!</span>";
+    loginMsg.innerHTML = `<span style="color:#00c853">✅ Login successful!</span>`;
 
     setTimeout(() => {
-      window.location.href = "https://www.google.com/";
+      window.location.href = "https://www.google.com"; // your redirect
     }, 600);
 
   } else {
-    loginMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
+    loginMsg.innerHTML = `<span style="color:#ff4d4d">❌ ${result.message}</span>`;
   }
 });
