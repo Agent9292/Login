@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Auth — Dark Minimal</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="auth-wrap">
+<div class="card">
+
+<header class="card-head">
+<h1 class="logo">Master Shin</h1>
+<p class="subtitle">Secure access — simple and fast</p>
+</header>
+
+<nav class="toggle">
+<button class="tab active" data-target="login">Sign in</button>
+<button class="tab" data-target="register">Create account</button>
+</nav>
+
+<!-- ================= LOGIN PANEL ================= -->
+<section id="login" class="panel active">
+<form id="loginForm" class="form" novalidate>
+
+<div class="field">
+<label>Username or Email</label>
+<input type="text" name="identifier" placeholder="username or you@domain.com" required>
+</div>
+
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" placeholder="••••••••" required>
+</div>
+
+<div class="row-between">
+<label class="small"><input type="checkbox"> Remember me</label>
+<a class="link">Forgot?</a>
+</div>
+
+<button class="btn primary" type="submit">Sign in</button>
+
+<!-- 🔥 ADD THIS -->
+<div id="loginMessage" class="msg"></div>
+
+</form>
+</section>
+
+
+<!-- ================= REGISTER PANEL ================= -->
+<section id="register" class="panel">
+<form id="registerForm" class="form" novalidate>
+
+<div class="field">
+<label>Username</label>
+<input type="text" name="username" placeholder="your_username" required>
+</div>
+
+<div class="field">
+<label>Email</label>
+<input type="email" name="email" placeholder="you@domain.com" required>
+</div>
+
+<div class="field">
+<label>Password</label>
+<input type="password" name="password" placeholder="Create a strong password" required>
+</div>
+
+<button class="btn accent" type="submit">Create account</button>
+
+<!-- 🔥 ADD THIS -->
+<div id="registerMessage" class="msg"></div>
+
+</form>
+</section>
+
+
+<footer class="card-foot">
+By continuing you agree to our <a class="link">Terms</a> and <a class="link">Privacy</a>.
+</footer>
+
+</div>
+</main>
+
+<!-- 🔥 Backendless + Script -->
+<script src="https://cdn.jsdelivr.net/npm/backendless@7.2.1/dist/backendless.min.js"></script>
+<script src="login.js"></script>
+
+</body>
+</html>
