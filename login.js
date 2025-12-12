@@ -1,11 +1,11 @@
 // ------------------------------------------
-// BACKENDLESS API CONFIG
+// SUPABASE EDGE FUNCTION CONFIG
 // ------------------------------------------
-const APP_ID = "01934801-7990-4C01-B583-16A556577788";
-const API_KEY = "FFF3E121-DFAC-4477-9BAE-8127B787E51B";
+const EDGE_URL =
+  "https://vbcwluybotksaimqfodf.supabase.co/functions/v1/Logics-Logins";
 
-const SERVICE_NAME = "Login";
-const BASE_URL = `https://api.backendless.com/${APP_ID}/${API_KEY}/services/${SERVICE_NAME}`;
+const SUPABASE_ANON_KEY =
+  "eyJhbGci0iJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3M101JzdXBhYmFzZSIsInJlZiI6InZiY3dsdXlib3Rrc2FpbXFmb2RmIiwicm9sZSI6ImFub241LCJpYXQiOjE3NjUwMzA4NDcsImV4cCI6MjA4MDYwNjg3MH0.Ihjp_kpy8W2dcJGSKHOcb4rqMMnbYcegWiST3tEh-KO";
 
 
 // ------------------------------------------
@@ -25,58 +25,39 @@ tabs.forEach(tab => {
 
 
 // ----------------------------------------------------
-// UNIVERSAL FETCH WRAPPER (with full debugging)
+// UNIVERSAL REQUEST WRAPPER
 // ----------------------------------------------------
-async function apiRequest(url, body) {
-  console.log("📡 Sending Request:", url);
-  console.log("📨 Payload:", body);
+async function callEdgeFunction(payload) {
 
   try {
-    const response = await fetch(url, {
+    const res = await fetch(EDGE_URL, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body)
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+        "apikey": SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify(payload)
     });
 
-    console.log("📥 Raw Response:", response);
-
-    const text = await response.text();
-    console.log("📥 Raw Body Text:", text);
+    const text = await res.text();
+    console.log("📥 RAW:", text);
 
     let json;
-
     try {
       json = JSON.parse(text);
-    } catch (parseErr) {
-      console.error("❌ JSON Parse Error:", parseErr);
-      return {
-        success: false,
-        message: "Server returned invalid JSON format!",
-        raw: text
-      };
+    } catch {
+      return { success: false, message: "Server returned invalid JSON" };
     }
 
-    // If backend gives an error
-    if (!response.ok) {
-      console.error("❌ HTTP ERROR:", response.status, response.statusText);
-      return {
-        success: false,
-        message: json.message || "Unknown server error",
-        httpStatus: response.status,
-        raw: json
-      };
+    if (!res.ok) {
+      return { success: false, message: json.message || "Unknown error", raw: json };
     }
 
-    console.log("✅ Parsed JSON:", json);
     return json;
 
-  } catch (networkErr) {
-    console.error("🌐 Network Error:", networkErr);
-    return {
-      success: false,
-      message: "Network error occurred!",
-      raw: networkErr
-    };
+  } catch (err) {
+    return { success: false, message: "Network error", raw: err };
   }
 }
 
@@ -99,13 +80,15 @@ registerForm.addEventListener("submit", async e => {
     return;
   }
 
-  const result = await apiRequest(`${BASE_URL}/signup`, {
-    username, email, password
+  const result = await callEdgeFunction({
+    type: "signup",
+    username,
+    email,
+    password
   });
 
   if (result.success) {
     registerMsg.innerHTML = "<span style='color:green'>🎉 Account created!</span>";
-    console.log("🟢 Signup Success:", result);
 
     setTimeout(() => {
       document.querySelector('.tab[data-target="login"]').click();
@@ -113,7 +96,6 @@ registerForm.addEventListener("submit", async e => {
 
   } else {
     registerMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
-    console.error("🔴 Signup Error:", result);
   }
 });
 
@@ -135,13 +117,14 @@ loginForm.addEventListener("submit", async e => {
     return;
   }
 
-  const result = await apiRequest(`${BASE_URL}/login`, {
-    identifier, password
+  const result = await callEdgeFunction({
+    type: "login",
+    identifier,
+    password
   });
 
   if (result.success) {
     loginMsg.innerHTML = "<span style='color:green'>✅ Login successful!</span>";
-    console.log("🟢 Login Success:", result);
 
     setTimeout(() => {
       window.location.href = "https://www.google.com/";
@@ -149,6 +132,5 @@ loginForm.addEventListener("submit", async e => {
 
   } else {
     loginMsg.innerHTML = `<span style='color:red'>❌ ${result.message}</span>`;
-    console.error("🔴 Login Error:", result);
   }
 });
