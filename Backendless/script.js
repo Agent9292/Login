@@ -6,8 +6,6 @@ const API_KEY = "CDF8B2F0-2693-428B-A125-50CA7F5B7662";
 
 Backendless.initApp(APP_ID, API_KEY);
 
-
-
 // =======================================
 // 🔁 Tab Toggle (Login / Register)
 // =======================================
@@ -20,7 +18,6 @@ tabs.forEach(tab => {
     tab.classList.add("active");
 
     const target = tab.dataset.target;
-
     panels.forEach(panel => {
       panel.classList.remove("active");
       if (panel.id === target) panel.classList.add("active");
@@ -28,100 +25,84 @@ tabs.forEach(tab => {
   });
 });
 
-
+// =======================================
+// 🔔 Alert Function (Perfect CSS Classes ke liye)
+// =======================================
+function showAlert(msg, targetId, type = 'error') {
+  const msgBox = document.getElementById(targetId);
+  if (msgBox) {
+    msgBox.textContent = msg;
+    msgBox.className = `msg ${type} show`;
+    
+    setTimeout(() => {
+      msgBox.classList.remove('show');
+    }, 4000);
+  }
+}
 
 // =======================================
 // 🧾 REGISTER USER (CREATE ACCOUNT)
 // =======================================
 document.getElementById("registerForm").addEventListener("submit", async (e) => {
-  e.preventDefault(); // IMPORTANT!
+  e.preventDefault();
 
-  const name = e.target.name.value.trim();
+  const username = e.target.username.value.trim();
   const email = e.target.email.value.trim();
   const password = e.target.password.value.trim();
 
-  if (!name || !email || !password) {
-    showAlert("❌ Please fill all fields!");
+  if (!username || !email || !password) {
+    showAlert("❌ Please fill all fields!", "registerMessage");
     return;
   }
 
   try {
     const user = new Backendless.User();
-    user.name = name;
+    user.name = username;
     user.email = email;
     user.password = password;
 
     const created = await Backendless.UserService.register(user);
-
-    showAlert("✅ Account created successfully!");
-    console.log("REGISTER:", created);
-
+    
+    showAlert("✅ Account created successfully!", "registerMessage", "success");
+    console.log("✅ REGISTER SUCCESS:", created);
+    
     e.target.reset();
 
   } catch (err) {
-    showAlert("❌ Error: " + err.message);
+    console.error("❌ Register Error:", err);
+    showAlert("❌ Error: " + err.message, "registerMessage");
   }
 });
-
-
 
 // =======================================
 // 🔐 LOGIN USER
 // =======================================
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
-  e.preventDefault(); // IMPORTANT!
+  e.preventDefault();
 
-  const email = e.target.email.value.trim();
+  const identifier = e.target.identifier.value.trim();
   const password = e.target.password.value.trim();
 
-  if (!email || !password) {
-    showAlert("❌ Enter email and password.");
+  if (!identifier || !password) {
+    showAlert("❌ Enter username/email and password.", "loginMessage");
     return;
   }
 
   try {
-    const logged = await Backendless.UserService.login(email, password, true);
-
-    showAlert("✅ Login successful!");
-    console.log("LOGIN:", logged);
-
-    // SUCCESS → Redirect to Google
-    window.location.href = "https://www.google.com";
+    showAlert("🔄 Logging in...", "loginMessage", "success");
+    
+    const logged = await Backendless.UserService.login(identifier, password, true);
+    
+    showAlert("✅ Login successful! Redirecting...", "loginMessage", "success");
+    console.log("✅ LOGIN SUCCESS:", logged);
+    
+    // 1.5 sec wait then redirect to Google
+    setTimeout(() => {
+      window.location.href = "https://www.google.com";
+    }, 1500);
 
   } catch (err) {
-    showAlert("❌ Login failed: " + err.message);
+    console.error("❌ Login Error:", err);
+    showAlert("❌ Login failed: " + err.message, "loginMessage");
   }
 });
-
-
-
-// =======================================
-// 🔔 SIMPLE ALERT (Top Message)
-// =======================================
-function showAlert(msg) {
-  let box = document.getElementById("msgBox");
-
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "msgBox";
-    box.style.position = "fixed";
-    box.style.top = "20px";
-    box.style.left = "50%";
-    box.style.transform = "translateX(-50%)";
-    box.style.padding = "12px 25px";
-    box.style.background = "#ff0044";
-    box.style.color = "#fff";
-    box.style.borderRadius = "8px";
-    box.style.fontSize = "15px";
-    box.style.zIndex = "9999";
-    box.style.boxShadow = "0 0 10px rgba(0,0,0,0.4)";
-    document.body.appendChild(box);
-  }
-
-  box.innerHTML = msg;
-  box.style.display = "block";
-
-  setTimeout(() => {
-    box.style.display = "none";
-  }, 3000);
-}
