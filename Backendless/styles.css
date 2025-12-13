@@ -77,3 +77,26 @@ input:focus{box-shadow:0 8px 30px rgba(111,43,217,0.12);border-color:rgba(111,43
 
 
 a.link:focus, button:focus{outline:2px solid rgba(111,43,217,0.12);outline-offset:2px}
+
+
+.msg {
+  display: none;
+  padding: 12px;
+  margin-top: 15px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+}
+.msg.show {
+  display: block;
+}
+.msg.success { 
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+.msg.error { 
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
