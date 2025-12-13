@@ -1,0 +1,79 @@
+
+
+
+
+/* File: styles.css */
+:root{
+--bg-1: #00040a; /* deeper dark */
+--bg-2: #000814; /* subtle bluish */
+--card: rgba(255,255,255,0.02);
+--muted: #7f98ad;
+--text: #dff6ff;
+--accent: #6f2bd9;
+--accent-2: #00c7ff;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+margin:0;
+font-family:Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+background: radial-gradient(800px 400px at 10% 10%, rgba(111,43,217,0.04), transparent),
+linear-gradient(180deg,var(--bg-1) 0%, var(--bg-2) 100%);
+color:var(--text);
+-webkit-font-smoothing:antialiased;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+/* Center everything and make the UI act like a focused login card */
+.auth-wrap{display:flex;align-items:center;justify-content:center;width:100%;max-width:460px}
+.left-visual{display:none} /* hide side visual for strict centered login look */
+.card{
+width:100%;max-width:420px;padding:28px;border-radius:14px;background:linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+border:1px solid var(--card);box-shadow:0 18px 50px rgba(0,0,0,0.75);
+display:block; margin:auto;
+}
+.card-head{margin-bottom:10px;text-align:center}
+.logo{margin:0;font-size:26px;letter-spacing:1px}
+.subtitle{margin:6px 0 0 0;color:var(--muted);font-size:13px}
+.toggle{display:flex;gap:8px;margin:18px 0}
+.tab{flex:1;padding:10px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.02);color:var(--muted);cursor:pointer;font-weight:600}
+.tab.active{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;box-shadow:0 8px 20px rgba(0,0,0,0.6)}
+.panel{display:none}
+.panel.active{display:block}
+.form{display:flex;flex-direction:column;gap:12px}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label{font-size:13px;color:var(--muted)}
+input{padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);background:rgba(255,255,255,0.01);color:var(--text);outline:none}
+input::placeholder{color:rgba(223,239,255,0.08)}
+.row-between{display:flex;align-items:center;justify-content:space-between;font-size:13px;color:var(--muted)}
+.small{font-size:13px}
+.link{color:var(--accent-2);text-decoration:none;cursor:pointer}
+.btn{padding:12px;border-radius:12px;border:none;font-weight:700;cursor:pointer}
+.btn.primary{background:linear-gradient(90deg,var(--accent-2),#0098bf);color:#021022}
+.btn.accent{background:linear-gradient(90deg,var(--accent),#4b1fa8);color:#fff}
+.card-foot{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
+
+
+/* make the form narrower and center its contents */
+.form{max-width:360px;margin:0 auto}
+
+
+/* small screens */
+@media (max-width:480px){
+.card{padding:20px}
+.logo{font-size:20px}
+}
+
+
+/* focus states */
+input:focus{box-shadow:0 8px 30px rgba(111,43,217,0.12);border-color:rgba(111,43,217,0.45)}
+
+
+/* subtle hover for buttons */
+.tab:hover{transform:translateY(-1px)}
+.btn:hover{transform:translateY(-1px)}
+
+
+a.link:focus, button:focus{outline:2px solid rgba(111,43,217,0.12);outline-offset:2px}
